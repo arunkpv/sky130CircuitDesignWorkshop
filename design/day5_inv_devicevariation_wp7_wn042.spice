@@ -1,35 +1,38 @@
-*Model Description
+*** Model Description **
 .param temp=27
+.param Wp=0.84
+.param Wn=0.42
 
-
-*Including sky130 library files
+*** Including sky130 library files ***
 .lib "sky130_fd_pr/models/sky130.lib.spice" tt
 
-
-*Netlist Description
-
-
-XM1 out in vdd vdd sky130_fd_pr__pfet_01v8 w=7 l=0.15
-XM2 out in 0 0 sky130_fd_pr__nfet_01v8 w=0.42 l=0.15
-
-
+*** Netlist Description ***
+XM1 out in vdd vdd sky130_fd_pr__pfet_01v8 w={Wp} l=0.15
+XM2 out in 0 0 sky130_fd_pr__nfet_01v8 w={Wn} l=0.15
 Cload out 0 50fF
-
 Vdd vdd 0 1.8V
 Vin in 0 1.8V
 
-*simulation commands
-
-.op
-
+*** Simulation Commands ***
 .dc Vin 0 1.8 0.01
 
 .control
+alterparam Wp=0.84
+alterparam Wn=0.42
+reset
 run
-setplot dc1
-display
+
+alterparam Wp=0.42
+alterparam Wn=7
+reset
+run
+
+alterparam Wp=7
+alterparam Wn=0.36
+reset
+run
+
+plot dc1.V(out) dc2.V(out) dc3.V(out) vs in 
++ xlabel 'Input Voltage(V)' ylabel 'Output Voltage(V)' title 'Inverter VTC for Extreme Device Variations'
 .endc
-
 .end
-
-
